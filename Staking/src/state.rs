@@ -14,5 +14,12 @@ pub struct InvestmentInfo {
     pub validator: String,
     
 }
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+
+pub struct TokenInfo{
+    pub name_token: String,
+    pub symbol_token: String,
+    pub decimals: u8,
+}
 
 pub const INVESTMENT: Item<InvestmentInfo> = Item::new("invest");

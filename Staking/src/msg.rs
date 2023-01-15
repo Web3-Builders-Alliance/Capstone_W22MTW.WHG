@@ -7,6 +7,8 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "snake_case")]
 pub struct InstantiateMsg {
     pub name_token: String,
+    pub symbol_token: String,
+    pub decimals: u8,
     pub validator: String,
     pub unbonding_period: Duration,
     pub emergancy_fee: Decimal
