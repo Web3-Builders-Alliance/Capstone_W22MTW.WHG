@@ -1,28 +1,41 @@
+use cosmwasm_std::{Decimal, Uint128, Coin};
+use cw_utils::Duration;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct InstantiateMsg {
-    pub val: String,
+    pub name_token: String,
+    pub validator: String,
+    pub unbonding_period: Duration,
+    pub emergancy_fee: Decimal
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum ExecuteMsg {
-    CustomMsg { val: String },
+    Bond {},
+    Unbond{ amount: Uint128},
+    Claim {},
+    BondAllTokens{},
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum QueryMsg {
-    CustomMsg { val: String },
+    Claims { address: String},
+    Investment{},
+    Balance{ address: String},
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-pub struct CustomResponse {
-    val: String,
+pub struct InvestmentResponse {
+    pub staked_tokens: Coin,
+    pub owner: String,
+    pub emergancy_fee: Decimal,
+    pub validator: String
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]

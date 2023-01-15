@@ -3,7 +3,7 @@ use std::fs::create_dir_all;
 
 use cosmwasm_schema::{export_schema, remove_schemas, schema_for};
 
-use staking::msg::{CustomResponse, ExecuteMsg, InstantiateMsg, QueryMsg};
+use staking::msg::{InvestmentResponse, ExecuteMsg, InstantiateMsg, QueryMsg};
 use staking::state::InvestmentInfo;
 
 fn main() {
@@ -16,5 +16,5 @@ fn main() {
     export_schema(&schema_for!(ExecuteMsg), &out_dir);
     export_schema(&schema_for!(QueryMsg), &out_dir);
     export_schema(&schema_for!(InvestmentInfo), &out_dir);
-    export_schema(&schema_for!(CustomResponse), &out_dir);
+    export_schema(&schema_for!(InvestmentResponse), &out_dir);
 }
