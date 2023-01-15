@@ -6,6 +6,11 @@ pub enum ContractError {
     #[error("{0}")]
     Std(#[from] StdError),
 
-    #[error("Custom Error val: {val:?}")]
-    CustomError { val: String },
+    #[error("Unauthorized")]
+    Unauthorized{},
+
+    #[error("Validator '{validator}' does not exist")]
+    NotInValidatorSet {validator: String},
+
+    
 }
