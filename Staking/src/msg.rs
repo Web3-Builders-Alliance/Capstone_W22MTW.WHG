@@ -21,6 +21,7 @@ pub enum ExecuteMsg {
     Unbond{ amount: Uint128},
     Claim {},
     BondAllTokens{},
+    Redelegate{},
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]

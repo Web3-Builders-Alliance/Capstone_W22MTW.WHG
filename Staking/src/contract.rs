@@ -1,10 +1,10 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, Validator};
+use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, Validator, StakingMsg};
 use cw2::set_contract_version;
 
 use crate::error::ContractError;
-use crate::functions::token_info;
+use crate::functions::{token_info, get_bonded, self};
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
 use crate::state::{TokenInfo, InvestmentInfo, INVESTMENT};
 
@@ -54,13 +54,21 @@ pub fn instantiate(
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
-    _deps: DepsMut,
-    _env: Env,
-    _info: MessageInfo,
-    _msg: ExecuteMsg,
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+    msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
-    unimplemented!()
+    match msg {
+        ExecuteMsg::Bond {  } => functions::bond(deps, env, info),
+        ExecuteMsg::BondAllTokens {  } => unimplemented!(),
+        ExecuteMsg::Redelegate {  } => unimplemented!(),
+        ExecuteMsg::Claim {  } => unimplemented!(),
+        ExecuteMsg::Unbond { amount } => unimplemented!(),
+    }
 }
+
+
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(_deps: Deps, _env: Env, _msg: QueryMsg) -> StdResult<Binary> {
