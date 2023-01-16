@@ -16,5 +16,8 @@ pub enum ContractError {
     EmptyBalance{ denom: String},
 
     #[error("Different donimations in bonds: '{denom1}' vs. '{denom2}'")]
-    DifferentBondDenom{denom1:String, denom2:String}
+    DifferentBondDenom{denom1:String, denom2:String},
+
+    #[error("You don't have anything to claim")]
+    NothingToClaim{},
 }

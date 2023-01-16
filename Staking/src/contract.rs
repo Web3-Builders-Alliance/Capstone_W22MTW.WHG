@@ -1,12 +1,13 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, Validator, StakingMsg};
+use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, Validator, StakingMsg, DistributionMsg, Uint128, coin, to_binary};
 use cw2::set_contract_version;
 
 use crate::error::ContractError;
-use crate::functions::{token_info, get_bonded, self};
-use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
-use crate::state::{TokenInfo, InvestmentInfo, INVESTMENT};
+use crate::functions::{token_info, get_bonded, self, balance};
+use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg, InvestmentResponse};
+use crate::state::{TokenInfo, InvestmentInfo, INVESTMENT, CLAIMS};
+
 
 
 const CONTRACT_NAME: &str = "crates.io:staking";
@@ -61,19 +62,34 @@ pub fn execute(
 ) -> Result<Response, ContractError> {
     match msg {
         ExecuteMsg::Bond {  } => functions::bond(deps, env, info),
-        ExecuteMsg::BondAllTokens {  } => unimplemented!(),
-        ExecuteMsg::Redelegate {  } => unimplemented!(),
-        ExecuteMsg::Claim {  } => unimplemented!(),
-        ExecuteMsg::Unbond { amount } => unimplemented!(),
+        ExecuteMsg::BondAllTokens {  } => functions::bond_all_tokens(deps, env, info),
+        ExecuteMsg::Redelegate {  } => functions::redelegate(deps, env, info),
+        ExecuteMsg::Claim {  } => functions::claim(deps, env, info),
+        ExecuteMsg::Unbond { amount } => functions::unbond(deps, env, info, amount),
     }
 }
 
 
 
+
 #[cfg_attr(not(feature = "library"), entry_point)]
-pub fn query(_deps: Deps, _env: Env, _msg: QueryMsg) -> StdResult<Binary> {
-    unimplemented!()
+pub fn query(
+    deps: Deps, 
+    env: Env,
+    msg: QueryMsg
+) -> StdResult<Binary> {
+    match msg{
+        QueryMsg::Balance { address } => to_binary(&functions::balance(deps, address)?),
+        QueryMsg::Claims { address } => to_binary(&CLAIMS.query_claims(deps, &deps.api.addr_validate(&address)?)?),
+        QueryMsg::Investment {  } => to_binary(&functions::query_investment(deps, env)?),
+        QueryMsg::TokenInfo {  } => to_binary(&functions::query_token_info(deps, env)?),
+    } 
+    
 }
+
+
+
+
 
 #[cfg(test)]
 mod tests {}

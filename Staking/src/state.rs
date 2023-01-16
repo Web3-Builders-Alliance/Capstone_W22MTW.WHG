@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use cosmwasm_std::{Addr, Decimal};
 use cw_storage_plus::Item;
 use cw_utils::Duration;
+use cw_controllers:: Claims;
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct InvestmentInfo {
@@ -22,4 +23,7 @@ pub struct TokenInfo{
     pub decimals: u8,
 }
 
+
+pub const TOKEN_INFO: Item<TokenInfo> = Item::new("token_info");
 pub const INVESTMENT: Item<InvestmentInfo> = Item::new("invest");
+pub const CLAIMS: Claims = Claims::new("claims");
