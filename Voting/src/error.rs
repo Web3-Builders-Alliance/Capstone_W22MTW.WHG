@@ -9,5 +9,6 @@ pub enum ContractError {
     #[error("Unauthorized error")]
     UnauthorizedError {},
 
-    
+    #[error("Poll doesn't exist! Do you want to create one?")]
+    PollNotExist{},
 }
