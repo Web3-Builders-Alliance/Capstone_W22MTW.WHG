@@ -76,11 +76,15 @@ pub fn vote(
 
             POLL.save(deps.storage, &poll_id, &poll)?;
 
-            Ok(Response::new())
+            Ok(Response::new()
+                .add_attribute("method", "vote")
+                .add_attribute("voting", vote)
+            )
         },
         //poll doesn't exist
         None => {
             create_poll(deps, info, poll_id, topic, options)
         },
     }
+    
 }
