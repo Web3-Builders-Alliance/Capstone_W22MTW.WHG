@@ -20,6 +20,8 @@ pub enum ExecuteMsg {
     Vote {
         poll_id:String,
         vote: String,
+        topic: String,
+        options: Vec<String>
     }
 
 }
