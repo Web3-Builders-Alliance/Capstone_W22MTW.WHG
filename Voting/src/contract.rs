@@ -1,11 +1,13 @@
+use std::env;
+
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
+use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, Order, to_binary};
 use cw2::set_contract_version;
 
 use crate::error::ContractError;
-use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
-use crate::state::{Config, CONFIG,};
+use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg, AllPollResponse, PollResponse, VoteResponse};
+use crate::state::{Config, CONFIG, POLL, BALLOTS,};
 use crate::functions;
 
 
@@ -50,8 +52,20 @@ pub fn execute(
 
 
 #[cfg_attr(not(feature = "library"), entry_point)]
-pub fn query(_deps: Deps, _env: Env, _msg: QueryMsg) -> StdResult<Binary> {
-    unimplemented!()
+pub fn query(
+    deps: Deps, 
+    env: Env, 
+    msg: QueryMsg
+) -> StdResult<Binary> {
+    match msg {
+        QueryMsg::AllPolls {  } => functions::query_all_polls(deps, env),
+        QueryMsg::Poll { poll_id } => functions::query_poll(deps, env, poll_id),
+        QueryMsg::Vote { poll_id, address } => functions::query_vote(deps, env, poll_id, address)   
+    }
 }
+
+
+
+
 
 

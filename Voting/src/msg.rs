@@ -53,7 +53,7 @@ pub struct PollResponse {
 #[serde(rename_all = "snake_case")]
 pub struct VoteResponse {
     
-    pub vote: Vec<Ballots>,
+    pub vote: Option<Ballots>,
 }
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]

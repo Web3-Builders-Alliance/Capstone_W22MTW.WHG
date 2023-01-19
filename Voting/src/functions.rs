@@ -1,6 +1,6 @@
-use cosmwasm_std::{DepsMut, MessageInfo, Response, StdResult};
+use cosmwasm_std::{DepsMut, MessageInfo, Response, StdResult, Deps, Env, Binary, to_binary, Order};
 
-use crate::{ContractError, state::{Poll, POLL, BALLOTS, Ballots}};
+use crate::{ContractError, state::{Poll, POLL, BALLOTS, Ballots}, msg::{AllPollResponse, PollResponse, VoteResponse}};
 
 pub fn create_poll(
     deps: DepsMut, 
@@ -87,4 +87,38 @@ pub fn vote(
         },
     }
     
+}
+
+pub fn query_all_polls(
+    deps: Deps,
+    env: Env,
+) -> StdResult<Binary>{
+    let polls = POLL
+        .range(deps.storage, None, None, Order::Ascending)
+        .map(|p| Ok(p?.1))
+        .collect::<StdResult<Vec<_>>>()?;
+
+    to_binary(&AllPollResponse {polls})
+}
+
+pub fn query_poll(
+    deps: Deps,
+    env: Env,
+    poll_id: String
+) -> StdResult<Binary>{
+    let poll = POLL. may_load(deps.storage, &poll_id)?;
+    to_binary(&PollResponse{poll})
+}
+
+pub fn query_vote(
+    deps: Deps,
+    env: Env,
+    poll_id: String,
+    address: String,
+) -> StdResult<Binary>{
+    let validated_address = deps.api.addr_validate(&address).unwrap();
+
+    let vote = BALLOTS.may_load(deps.storage, (validated_address, &poll_id))?;
+
+    to_binary(&VoteResponse { vote })
 }
