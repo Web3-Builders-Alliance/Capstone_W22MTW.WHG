@@ -4,7 +4,7 @@ mod tests {
 
     use crate::contract::{instantiate, execute, query};
     use crate::functions::{self, vote};
-    use crate::msg::{InstantiateMsg, ExecuteMsg};
+    use crate::msg::{InstantiateMsg, ExecuteMsg, QueryMsg, AllPollResponse, PollResponse};
     use crate::state::Poll;
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
     use cosmwasm_std::{attr,from_binary, DepsMut};
@@ -59,7 +59,7 @@ mod tests {
 
         //instantiage 
         let msg = InstantiateMsg {admin: None};
-        
+            
         let res = instantiate(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
 
         //create poll
@@ -75,6 +75,7 @@ mod tests {
         assert_eq!(res.attributes, vec![attr("method", "create_poll"), attr("poll_id", "07".to_string()), attr("topic", "".to_string())])
         
     }
+
     #[test]
     fn test_vote(){
         let mut deps = mock_dependencies();
@@ -102,5 +103,66 @@ mod tests {
 
         assert_eq!(res.attributes, vec![attr("method", "vote"), attr("voting", "yes".to_string())])
         
+    }
+
+    #[test]
+    fn query_all_poll(){
+        let mut deps = mock_dependencies();
+        let env = mock_env();
+        let info = mock_info(ADDR1, &[]);
+        let msg = InstantiateMsg { admin: None};
+        let res = instantiate(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+
+        //create poll
+        let msg = ExecuteMsg::CreatePoll { poll_id: "07".to_string(), topic: "Do you want ...?".to_string(), options: vec![
+            "yes".to_string(),
+            "no".to_string(),
+            "I'm not interested".to_string(),
+        ] 
+        };
+        let res = execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+
+        //create 2. poll
+        let msg = ExecuteMsg::CreatePoll { poll_id: "08".to_string(), topic: "Do you want ...?".to_string(), options: vec![
+            "yes".to_string(),
+            "no".to_string(),
+            "I'm not interested".to_string()
+        ] 
+        };
+        let res = execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+
+        //query
+        let msg = QueryMsg::AllPolls {  };
+        let result = query(deps.as_ref(), env, msg).unwrap();
+        let res:AllPollResponse = from_binary(&result).unwrap();
+        assert_eq!(res.polls.len(), 2)
+    }
+
+    #[test]
+    fn test_query_poll_id(){
+        let mut deps = mock_dependencies();
+        let env = mock_env();
+        let info =  mock_info(ADDR1, &[]);
+        let msg = InstantiateMsg{admin:None };
+        let res = instantiate(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+
+        //create poll
+        let msg = ExecuteMsg::CreatePoll { poll_id: "08".to_string(), topic: "".to_string(), options: vec![] };
+        let res = execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+    
+        //Query for poll_id
+        let msg = QueryMsg::Poll { poll_id: "08".to_string() };
+
+        let result = query(deps.as_ref(), env.clone(), msg).unwrap();
+        let res: PollResponse = from_binary(&result).unwrap();
+
+        assert!(res.poll.is_some());
+
+        let msg = QueryMsg::Poll { poll_id: "10".to_string() };
+        let result = query(deps.as_ref(), env.clone(), msg).unwrap();
+        let res: PollResponse = from_binary(&result).unwrap();
+
+        assert!(res.poll.is_none());
+
     }
 }
