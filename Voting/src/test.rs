@@ -4,7 +4,7 @@ mod tests {
 
     use crate::contract::{instantiate, execute, query};
     use crate::functions::{self, vote};
-    use crate::msg::{InstantiateMsg, ExecuteMsg, QueryMsg, AllPollResponse, PollResponse};
+    use crate::msg::{InstantiateMsg, ExecuteMsg, QueryMsg, AllPollResponse, PollResponse, VoteResponse};
     use crate::state::Poll;
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
     use cosmwasm_std::{attr,from_binary, DepsMut};
@@ -164,5 +164,36 @@ mod tests {
 
         assert!(res.poll.is_none());
 
+    }
+
+    #[test]
+    fn test_query_vote(){
+        let mut deps = mock_dependencies();
+        let env = mock_env();
+        let info = mock_info(ADDR1, &[]);
+        let msg = InstantiateMsg{admin: None};
+        let res = instantiate(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+
+        //create poll
+        let msg = ExecuteMsg::CreatePoll { poll_id: "07".to_string(), topic: "Do you want ...?".to_string(), options: vec![
+            "yes".to_string(),
+            "no".to_string(),
+            "I'm not interested".to_string()
+        ]};
+        let res = execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+
+        //Vote
+        let msg = ExecuteMsg::Vote { poll_id: "07".to_string(), vote: "yes".to_string(), topic: "Do you want ...?".to_string(), options: vec![
+            "yes".to_string(),
+            "no".to_string(),
+            "I'm not interested".to_string()
+        ]};
+        let res = execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+        //query for the vote
+        let msg = QueryMsg::Vote { poll_id: "07".to_string(), address: ADDR1.to_string() };
+
+        let result = query(deps.as_ref(), env, msg).unwrap();
+        let res:VoteResponse = from_binary(&result).unwrap();
+        assert!(res.vote.is_some());
     }
 }
