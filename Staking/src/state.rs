@@ -12,7 +12,7 @@ pub struct Config{
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct Deposit{
+pub struct Deposits{
     pub count: i32,
     pub owner: Addr,
     pub coins: Coin,
@@ -51,7 +51,7 @@ pub struct TokenInfo{
 }
 
 pub const CONFIG: Item<Config> = Item::new("config");
-pub const DEPOSITS: Map<(&str,&str), Deposit> = Map::new("deposits");
+pub const DEPOSITS: Map<(&str,&str), Deposits> = Map::new("deposits");
 pub const CW20_DEPOSITS: Map<(&str, &str), Cw20Deposits> = Map::new("cw20deposits");
 pub const TOKEN_INFO: Item<TokenInfo> = Item::new("token_info");
 pub const INVESTMENT: Item<InvestmentInfo> = Item::new("invest");
