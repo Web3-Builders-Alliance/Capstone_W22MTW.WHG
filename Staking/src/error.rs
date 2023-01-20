@@ -20,4 +20,10 @@ pub enum ContractError {
 
     #[error("You don't have anything to claim")]
     NothingToClaim{},
+
+    #[error("Invalid Coin")]
+    InvalidCoin{},
+
+    #[error("Invalid Owner")]
+    InvalidOwner{},
 }
