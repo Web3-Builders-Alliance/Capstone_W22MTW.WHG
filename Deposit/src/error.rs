@@ -8,4 +8,13 @@ pub enum ContractError {
 
     #[error("Custom Error val: {val:?}")]
     CustomError { val: String },
+
+    #[error("unathorized error")]
+    InvalidExecuteMsg {},
+
+    #[error("Invalid Coin")]
+    InvalidCoin{},
+
+    #[error("Invalid  Owner")]
+    InvalidOwner{},
 }

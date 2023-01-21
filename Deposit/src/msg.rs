@@ -1,28 +1,48 @@
+use cosmwasm_std::Uint128;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+
+use crate::state::Deposits;
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct InstantiateMsg {
-    pub val: String,
+    
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum ExecuteMsg {
-    CustomMsg { val: String },
+    Deposits{
+        amount: u128,
+        denom: String,
+    },
+
+    Withdraw{
+        amount: u128,
+        denom: String,
+    },
+
+    Cw20Deposits{
+        owner: String,
+        amount: Uint128,
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum QueryMsg {
-    CustomMsg { val: String },
+    Deposits{
+        address: String,
+    },
+
+    Config{}
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-pub struct CustomResponse {
-    val: String,
+pub struct DepositResponse {
+    pub deposits: Vec<(String, Deposits)>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
