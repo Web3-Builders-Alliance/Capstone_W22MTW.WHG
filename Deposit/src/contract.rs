@@ -1,11 +1,12 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
+use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, Uint128, BankMsg};
 use cw2::set_contract_version;
 
 use crate::error::ContractError;
+use crate::functions;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
-use crate::state::{CONFIG, Config};
+use crate::state::{CONFIG, Config, DEPOSITS, Deposits};
 
 
 const CONTRACT_NAME: &str = "crates.io:deposit";
@@ -35,13 +36,17 @@ pub fn instantiate(
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
-    _deps: DepsMut,
+    deps: DepsMut,
     _env: Env,
-    _info: MessageInfo,
-    _msg: ExecuteMsg,
+    info: MessageInfo,
+    msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
-    unimplemented!()
+    match msg {
+        ExecuteMsg::Deposits { amount, denom } => functions::execute_deposit(deps, info, amount, denom),
+        ExecuteMsg::Withdraw { amount, denom } => unimplemented!(),
+        ExecuteMsg::Cw20Deposits { owner, amount } => unimplemented!(),    }
 }
+
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(_deps: Deps, _env: Env, _msg: QueryMsg) -> StdResult<Binary> {
