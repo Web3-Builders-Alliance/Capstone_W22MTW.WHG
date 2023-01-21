@@ -2,7 +2,7 @@ use cosmwasm_std::{Storage, Addr, Uint128, QuerierWrapper, Response, StakingMsg,
 use cosmwasm_storage::{singleton, Singleton, singleton_read, ReadonlySingleton};
 
 
-use crate::{state::{TokenInfo, INVESTMENT, CLAIMS, TOKEN_INFO}, contract::{self, query}, ContractError, msg::{InvestmentResponse, TokenInfoResponse}};
+use crate::{state::{TokenInfo, INVESTMENT, CLAIMS, TOKEN_INFO}, ContractError, msg::{InvestmentResponse, TokenInfoResponse}};
 
 
 
@@ -53,7 +53,7 @@ pub fn bond(
             denom: invest.bond_denom.clone(),
         })?;
 
-    let bonded = get_bonded(&deps.querier, &env.contract.address)?;
+    let _bonded = get_bonded(&deps.querier, &env.contract.address)?;
 
     Ok(Response::new()
         .add_message(StakingMsg::Delegate { 
@@ -81,7 +81,7 @@ pub fn redelegate(
             denom: invest.bond_denom.clone(),
         })?;
 
-    let bonded = get_bonded(&deps.querier, &env.contract.address)?;
+    let _bonded = get_bonded(&deps.querier, &env.contract.address)?;
 
     Ok(Response::new()
         .add_message(StakingMsg::Redelegate { src_validator: info.sender.to_string(), dst_validator: invest.validator.clone(), amount: payment.clone() } )
@@ -103,7 +103,7 @@ pub fn bond_all_tokens(
     }
 
     let invest = INVESTMENT.load(deps.storage)?;
-    let mut balance = deps
+    let balance = deps
         .querier
         .query_balance(&env.contract.address, &invest.bond_denom)?;
 
@@ -143,16 +143,16 @@ pub fn claim(
 }
 
 pub fn unbond(
-    mut deps: DepsMut, 
+    deps: DepsMut, 
     env: Env,
     info: MessageInfo,
     amount: Uint128,
 ) -> Result<Response, ContractError>{
     let invest = INVESTMENT.load(deps.storage)?;
 
-    let bonded = get_bonded(&deps.querier, &env.contract.address).unwrap();
+    let _bonded = get_bonded(&deps.querier, &env.contract.address).unwrap();
 
-    let mut balance = deps 
+    let balance = deps 
         .querier
         .query_balance(&env.contract.address, &invest.bond_denom)?;
     
@@ -174,7 +174,7 @@ pub fn unbond(
 }
 
 pub fn balance(deps: Deps, address: String) -> StdResult<Uint128>{
-    let address = deps.api.addr_validate(&address)?;
+    let _address = deps.api.addr_validate(&address)?;
     Ok(Uint128::zero())
 }
 
@@ -196,7 +196,7 @@ pub fn query_investment(
 
 pub fn query_token_info(
     deps: Deps, 
-    env: Env,
+    _env: Env,
 ) -> StdResult<TokenInfoResponse>{
     let info = TOKEN_INFO.load(deps.storage)?;
     

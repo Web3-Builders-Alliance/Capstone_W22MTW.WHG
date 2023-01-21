@@ -3,8 +3,6 @@ use cw_utils::Duration;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::state::Deposits;
-
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct InstantiateMsg {
@@ -20,10 +18,6 @@ pub struct InstantiateMsg {
 #[serde(rename_all = "snake_case")]
 pub enum ExecuteMsg {
 
-    Deposit { amount: u128, denom: String},
-    Withdraw { amount: u128, denom: String},
-    Cw20Deposits { owner: String, amount: Uint128},
-
     Bond {},
     Unbond{ amount: Uint128},
     Claim {},
@@ -34,20 +28,10 @@ pub enum ExecuteMsg {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum QueryMsg {
-    Deposits { address: String},
-
-    Config{},
-
     Claims { address: String},
     Investment{},
     Balance{ address: String},
     TokenInfo{},
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-#[serde(rename_all = "snake_case")]
-pub struct DepositResponse{
-    pub deposits: Vec<(String, Deposits)>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
