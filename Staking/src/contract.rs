@@ -6,7 +6,7 @@ use cw2::set_contract_version;
 use crate::error::ContractError;
 use crate::functions::{token_info, get_bonded, self, balance};
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg, InvestmentResponse};
-use crate::state::{TokenInfo, InvestmentInfo, INVESTMENT, CLAIMS};
+use crate::state::{TokenInfo, InvestmentInfo, INVESTMENT, CLAIMS, CONFIG, Config};
 
 
 
@@ -22,6 +22,10 @@ pub fn instantiate(
     msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
+
+    let config = &Config { owner: info.sender.clone() };
+
+    CONFIG.save(deps.storage, config)?;
 
     //check the validator
     let validator= deps.querier.query_validator(msg.validator.clone())?;
@@ -61,6 +65,9 @@ pub fn execute(
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match msg {
+        ExecuteMsg::Deposit { amount, denom } => unimplemented!(),
+        ExecuteMsg::Withdraw { amount, denom } => unimplemented!(),
+        ExecuteMsg::Cw20Deposits { owner, amount } => unimplemented!(),
         ExecuteMsg::Bond {  } => functions::bond(deps, env, info),
         ExecuteMsg::BondAllTokens {  } => functions::bond_all_tokens(deps, env, info),
         ExecuteMsg::Redelegate {  } => functions::redelegate(deps, env, info),
@@ -79,6 +86,8 @@ pub fn query(
     msg: QueryMsg
 ) -> StdResult<Binary> {
     match msg{
+        QueryMsg::Config {  } => unimplemented!(),
+        QueryMsg::Deposits { address } => unimplemented!(),
         QueryMsg::Balance { address } => to_binary(&functions::balance(deps, address)?),
         QueryMsg::Claims { address } => to_binary(&CLAIMS.query_claims(deps, &deps.api.addr_validate(&address)?)?),
         QueryMsg::Investment {  } => to_binary(&functions::query_investment(deps, env)?),
