@@ -33,7 +33,7 @@ pub struct Withdraws {
     pub coins: Coin,
 }
 
-pub const STATE: Item<Config> = Item::new("config");
+pub const CONFIG: Item<Config> = Item::new("config");
 
 pub const DEPOSITS: Map<(&str, &str), Deposits> = Map::new("deposits");
 
