@@ -17,4 +17,7 @@ pub enum ContractError {
 
     #[error("Invalid  Owner")]
     InvalidOwner{},
+
+    #[error("Nothing to Withdraw")]
+    NoCw20ToWithdraw{},
 }
