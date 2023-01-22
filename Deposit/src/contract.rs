@@ -1,11 +1,11 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, Uint128, BankMsg};
+use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, Uint128, BankMsg, Order, to_binary};
 use cw2::set_contract_version;
 
 use crate::error::ContractError;
 use crate::functions;
-use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
+use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg, DepositResponse};
 use crate::state::{CONFIG, Config, DEPOSITS, Deposits, Cw20Deposits, CW20_DEPOSITS};
 
 
@@ -55,8 +55,7 @@ pub fn query(
     msg: QueryMsg
 ) -> StdResult<Binary> {
     match msg {
-        QueryMsg::Config {  } => unimplemented!(),
-        QueryMsg::Deposits { address } => unimplemented!()
+        QueryMsg::Config {  }=> to_binary(&functions::get_config(deps)?),
+        QueryMsg::Deposits { address } => to_binary(&functions::query_deposit(deps, address)?)
     }
 }
-

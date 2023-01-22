@@ -1,6 +1,6 @@
-use cosmwasm_std::{DepsMut, MessageInfo, Response, BankMsg, coin, Uint128};
+use cosmwasm_std::{DepsMut, MessageInfo, Response, BankMsg, coin, Uint128, Deps, StdResult, Order};
 
-use crate::{state::{CONFIG, DEPOSITS, Deposits, CW20_DEPOSITS, Cw20Deposits}, ContractError};
+use crate::{state::{CONFIG, DEPOSITS, Deposits, CW20_DEPOSITS, Cw20Deposits, Config}, ContractError, msg::DepositResponse};
 
 
 pub fn execute_deposit(
@@ -137,4 +137,25 @@ pub fn execute_cw20_deposit(
         .add_attribute("owner", owner)
         .add_attribute("amount", amount.to_string())
     )
+}
+
+
+pub fn query_deposit(
+    deps: Deps,
+    address: String,
+) -> StdResult<DepositResponse> {
+    let res: StdResult<Vec<_>> = DEPOSITS
+        .prefix(&address)
+        .range(deps.storage, None, None, Order::Ascending)
+        .collect();
+
+    let deposits = res?;
+    Ok(DepositResponse { deposits })
+}
+
+pub fn get_config(
+    deps: Deps
+) -> StdResult<Config>{
+    let config = CONFIG.load(deps.storage)?;
+    Ok(config)
 }
