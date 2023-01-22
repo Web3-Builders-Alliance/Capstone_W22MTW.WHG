@@ -1,6 +1,6 @@
-use cosmwasm_std::{DepsMut, MessageInfo, Response, BankMsg, coin};
+use cosmwasm_std::{DepsMut, MessageInfo, Response, BankMsg, coin, Uint128};
 
-use crate::{state::{CONFIG, DEPOSITS, Deposits}, ContractError};
+use crate::{state::{CONFIG, DEPOSITS, Deposits, CW20_DEPOSITS, Cw20Deposits}, ContractError};
 
 
 pub fn execute_deposit(
@@ -63,5 +63,78 @@ pub fn execute_deposit(
         .add_attribute("method", "execute_deposit")
         .add_attribute("denom", d_coins.denom)
         .add_attribute("amount", d_coins.amount)
+    )
+}
+
+pub fn execute_withdraw(
+    deps: DepsMut, 
+    info: MessageInfo,
+    amount: u128,
+    denom: String
+) -> Result<Response, ContractError>{
+    let sender = info.sender.clone().to_string();
+    let mut deposit = DEPOSITS
+        .load(deps.storage, (&sender, denom.as_str()))
+        .unwrap();
+
+        deposit.count = deposit.count.checked_sub(1).unwrap();
+        //withdraw the amount
+        deposit.coins.amount = deposit
+            .coins
+            .amount
+            .checked_sub(Uint128::from(amount)) 
+            .unwrap();
+
+    DEPOSITS
+        .save(deps.storage, (&sender, denom.as_str()), &deposit)
+        .unwrap();
+
+        let msg = BankMsg::Send { to_address: sender.clone(), amount: vec![coin(amount, denom.clone())]};
+    
+    Ok(Response::new()
+        .add_attribute("method", "withdraw")
+        .add_attribute("denom", denom)
+        .add_attribute("amount", amount.to_string())
+        .add_message(msg)
+    )
+}
+
+pub fn execute_cw20_deposit(
+    deps: DepsMut,
+    info: MessageInfo,
+    owner: String,
+    amount: Uint128
+) -> Result<Response, ContractError>{
+    //owner(contract address)
+    let cw20_contract_address = info.sender.clone().to_string();
+    //check deposit is already exist
+    match CW20_DEPOSITS.load(deps.storage, (&owner, &cw20_contract_address)){
+        Ok(mut deposit)=> {
+            deposit.count = deposit.count.checked_add(1).unwrap();
+            deposit.amount = deposit.amount.checked_add(amount).unwrap();
+
+            //save it
+            CW20_DEPOSITS
+                .save(deps.storage, (&owner, &cw20_contract_address), &deposit)
+                .unwrap();
+        }
+        Err(_) => {
+            //contract doesn't exist, create one
+            let deposit = Cw20Deposits {
+                count:1,
+                owner: owner.clone(),
+                contract: info.sender.clone().to_string(),
+                amount: amount
+            };
+            //save it
+            CW20_DEPOSITS
+                .save(deps.storage, (&owner, &cw20_contract_address), &deposit)
+                .unwrap();
+        }
+    }   
+   Ok(Response::new()
+        .add_attribute("method", "cw20_deposit")
+        .add_attribute("owner", owner)
+        .add_attribute("amount", amount.to_string())
     )
 }

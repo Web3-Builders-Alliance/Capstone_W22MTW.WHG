@@ -6,7 +6,7 @@ use cw2::set_contract_version;
 use crate::error::ContractError;
 use crate::functions;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
-use crate::state::{CONFIG, Config, DEPOSITS, Deposits};
+use crate::state::{CONFIG, Config, DEPOSITS, Deposits, Cw20Deposits, CW20_DEPOSITS};
 
 
 const CONTRACT_NAME: &str = "crates.io:deposit";
@@ -43,15 +43,20 @@ pub fn execute(
 ) -> Result<Response, ContractError> {
     match msg {
         ExecuteMsg::Deposits { amount, denom } => functions::execute_deposit(deps, info, amount, denom),
-        ExecuteMsg::Withdraw { amount, denom } => unimplemented!(),
-        ExecuteMsg::Cw20Deposits { owner, amount } => unimplemented!(),    }
+        ExecuteMsg::Withdraw { amount, denom } => functions::execute_withdraw(deps, info, amount, denom),
+        ExecuteMsg::Cw20Deposits { owner, amount } => functions::execute_cw20_deposit(deps, info, owner, amount),    
+    }
 }
-
 
 #[cfg_attr(not(feature = "library"), entry_point)]
-pub fn query(_deps: Deps, _env: Env, _msg: QueryMsg) -> StdResult<Binary> {
-    unimplemented!()
+pub fn query(
+    deps: Deps, 
+    _env: Env, 
+    msg: QueryMsg
+) -> StdResult<Binary> {
+    match msg {
+        QueryMsg::Config {  } => unimplemented!(),
+        QueryMsg::Deposits { address } => unimplemented!()
+    }
 }
 
-#[cfg(test)]
-mod tests {}
