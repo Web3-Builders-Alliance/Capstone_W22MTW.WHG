@@ -2,7 +2,7 @@ use cosmwasm_std::Uint128;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::state::Deposits;
+use crate::state::{Deposits, Cw20Deposits};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
@@ -26,6 +26,11 @@ pub enum ExecuteMsg {
     Cw20Deposits{
         owner: String,
         amount: Uint128,
+    },
+
+    Cw20Withdraws{
+        owner: String,
+        amount: Uint128
     }
 }
 
@@ -36,7 +41,11 @@ pub enum QueryMsg {
         address: String,
     },
 
-    Config{}
+    Config{},
+
+    Cw20Deposits{
+        address: String,
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -44,6 +53,13 @@ pub enum QueryMsg {
 pub struct DepositResponse {
     pub deposits: Vec<(String, Deposits)>,
 }
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub struct Cw20DepositResponse {
+    pub deposits: Vec<(String, Cw20Deposits)>,
+}
+
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]

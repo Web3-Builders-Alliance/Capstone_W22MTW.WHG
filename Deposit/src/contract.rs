@@ -44,7 +44,9 @@ pub fn execute(
     match msg {
         ExecuteMsg::Deposits { amount, denom } => functions::execute_deposit(deps, info, amount, denom),
         ExecuteMsg::Withdraw { amount, denom } => functions::execute_withdraw(deps, info, amount, denom),
-        ExecuteMsg::Cw20Deposits { owner, amount } => functions::execute_cw20_deposit(deps, info, owner, amount),    
+        ExecuteMsg::Cw20Deposits { owner, amount } => functions::execute_cw20_deposit(deps, info, owner, amount),  
+        ExecuteMsg::Cw20Withdraws { owner, amount } => unimplemented!(),
+
     }
 }
 
@@ -56,6 +58,7 @@ pub fn query(
 ) -> StdResult<Binary> {
     match msg {
         QueryMsg::Config {  }=> to_binary(&functions::get_config(deps)?),
-        QueryMsg::Deposits { address } => to_binary(&functions::query_deposit(deps, address)?)
+        QueryMsg::Deposits { address } => to_binary(&functions::query_deposit(deps, address)?),
+        QueryMsg::Cw20Deposits { address } => unimplemented!(),
     }
 }
