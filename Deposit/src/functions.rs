@@ -12,19 +12,19 @@ pub fn execute_deposit(
     let sender = info.sender.clone().to_string();
 
     let d_coins = info.funds[0].clone();
-    
-    //check sender is the owner 
-    let owner = CONFIG.load(deps.storage).unwrap().owner;
-    if sender != owner.to_string(){
-        return Err(ContractError::InvalidOwner {  });
-    }
-    
+
     //check funds arre is a lenght of 1
 
     if info.funds.len() != 1 {
         return Err(ContractError::InvalidCoin {  });
     }
 
+    //check sender is the owner 
+    let owner = CONFIG.load(deps.storage).unwrap().owner;
+    if sender != owner.to_string(){
+        return Err(ContractError::InvalidOwner {  });
+    }
+    
     //Check the sender has already deposit
     match DEPOSITS.load(deps.storage, (&sender, d_coins.denom.as_str())) {
         Ok (mut deposit) => {
