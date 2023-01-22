@@ -32,6 +32,12 @@ pub struct Withdraws {
     pub owner: Addr,
     pub coins: Coin,
 }
+pub struct Cw20Withdraws{
+    pub count: u128,
+    pub owner: String,
+    pub contract: String,
+    pub amount: Uint128,
+}
 
 pub const CONFIG: Item<Config> = Item::new("config");
 
