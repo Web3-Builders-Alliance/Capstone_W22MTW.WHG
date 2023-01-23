@@ -92,7 +92,7 @@ pub fn execute_withdraw(
         let msg = BankMsg::Send { to_address: sender.clone(), amount: vec![coin(amount, denom.clone())]};
     
     Ok(Response::new()
-        .add_attribute("method", "withdraw")
+        .add_attribute("method", "execute_withdraw")
         .add_attribute("denom", denom)
         .add_attribute("amount", amount.to_string())
         .add_message(msg)
@@ -163,7 +163,9 @@ pub fn execute_cw20_withdraw(
             CW20_DEPOSITS.save(deps.storage, (&sender, &contract), &deposit)?;
 
             Ok(Response::new()
-                .add_attribute("execute", "withdraw")
+                .add_attribute("execute", "cw20_withdraw")
+                .add_attribute("sender", info.sender)
+                .add_attribute("amount", deposit.amount)
                 .add_message(msg)
             )
         }
