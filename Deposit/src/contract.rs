@@ -46,43 +46,8 @@ pub fn execute(
         ExecuteMsg::Deposits { amount, denom } => functions::execute_deposit(deps, info, amount, denom),
         ExecuteMsg::Withdraw { amount, denom } => functions::execute_withdraw(deps, info, amount, denom),
         ExecuteMsg::Cw20Deposits { owner, amount } => functions::execute_cw20_deposit(deps, info, owner, amount),  
-        ExecuteMsg::Cw20Withdraws { owner, amount } => unimplemented!(),
+        ExecuteMsg::Cw20Withdraws { contract, amount }=> functions::execute_cw20_withdraw(deps, info, contract, amount),
 
-    }
-}
-
-pub fn cw20_withdraw(
-    deps: DepsMut,
-    info: MessageInfo,
-    contract: String,
-    amount: Uint128
-) -> Result<Response, ContractError>{
-    let sender = info.sender.clone().to_string();
-    match CW20_DEPOSITS.load(deps.storage, (&sender, &contract)){
-        Ok(mut deposit) => {
-            deposit.count = deposit.count.checked_sub(1).unwrap();
-            deposit.amount = deposit.amount.checked_sub(amount).unwrap();
-
-            //save it 
-            CW20_DEPOSITS
-                .save(deps.storage, (&sender,&contract), &deposit)
-                .unwrap();
-
-            let execute_msg = cw20_base::msg::ExecuteMsg::Transfer { recipient: sender.clone(), amount: Uint128::from(amount) };
-
-            let msg = WasmMsg::Execute { contract_addr: contract.clone(), msg: to_binary(&execute_msg)?, funds: vec![] };
-
-            // CW20_DEPOSITS.update(deps.storage, (&sender, &contract), |total:Option<Cw20Deposits>| -> StdResult<u64>{Ok(total.unwrap_or_default().checked_sub(1u64).unwrap())},)?;
-            CW20_DEPOSITS.save(deps.storage, (&sender, &contract), &deposit)?;
-            
-            Ok(Response::new()
-                .add_attribute("execute", "withdraw")
-                .add_message(msg)
-            )
-        }
-        Err(_) => {
-            return Err(ContractError::NoCw20ToWithdraw {  });
-        }
     }
 }
 

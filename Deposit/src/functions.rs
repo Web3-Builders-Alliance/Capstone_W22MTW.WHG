@@ -1,4 +1,4 @@
-use cosmwasm_std::{DepsMut, MessageInfo, Response, BankMsg, coin, Uint128, Deps, StdResult, Order};
+use cosmwasm_std::{DepsMut, MessageInfo, Response, BankMsg, coin, Uint128, Deps, StdResult, Order, WasmMsg, to_binary};
 
 use crate::{state::{CONFIG, DEPOSITS, Deposits, CW20_DEPOSITS, Cw20Deposits, Config}, ContractError, msg::DepositResponse};
 
@@ -137,6 +137,40 @@ pub fn execute_cw20_deposit(
         .add_attribute("owner", owner)
         .add_attribute("amount", amount.to_string())
     )
+}
+
+pub fn execute_cw20_withdraw(
+    deps: DepsMut,
+    info: MessageInfo,
+    contract: String,
+    amount: Uint128
+) -> Result<Response, ContractError>{
+    let sender = info.sender.clone().to_string();
+    match CW20_DEPOSITS.load(deps.storage, (&sender, &contract)){
+        Ok(mut deposit) => {
+            deposit.count = deposit.count.checked_sub(1).unwrap();
+            deposit.amount = deposit.amount.checked_sub(amount).unwrap();
+
+            //save it 
+            CW20_DEPOSITS
+                .save(deps.storage, (&sender,&contract), &deposit)
+                .unwrap();
+
+            let execute_msg = cw20_base::msg::ExecuteMsg::Transfer { recipient: sender.clone(), amount: Uint128::from(amount) };
+
+            let msg = WasmMsg::Execute { contract_addr: contract.clone(), msg: to_binary(&execute_msg)?, funds: vec![] };
+
+            CW20_DEPOSITS.save(deps.storage, (&sender, &contract), &deposit)?;
+
+            Ok(Response::new()
+                .add_attribute("execute", "withdraw")
+                .add_message(msg)
+            )
+        }
+        Err(_) => {
+            return Err(ContractError::NoCw20ToWithdraw {  });
+        }
+    }
 }
 
 

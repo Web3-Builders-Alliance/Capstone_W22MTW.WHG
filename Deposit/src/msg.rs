@@ -29,7 +29,7 @@ pub enum ExecuteMsg {
     },
 
     Cw20Withdraws{
-        owner: String,
+        contract: String,
         amount: Uint128
     }
 }
