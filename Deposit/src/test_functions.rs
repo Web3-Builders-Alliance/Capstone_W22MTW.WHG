@@ -24,17 +24,17 @@ pub fn deposit_coin(deps: DepsMut){
     assert_eq!(res.attributes[2].value, AMOUNT.to_string());
 }
 
-pub fn query_coins(deps: Deps){
+pub fn query_deposit_coin(deps: Deps){
     let msg = QueryMsg::Deposits { address: SENDER.to_string() };
     let res = query(deps, mock_env(), msg).unwrap();
     let query = from_binary::<DepositResponse>(&res).unwrap();
-    let res = functions::query_deposit(deps, SENDER.to_string()).unwrap();
+    // let res = functions::query_deposit(deps, SENDER.to_string()).unwrap();
 
     assert_eq!(SENDER, query.deposits[0].1.owner);
     assert_eq!(DENOM, query.deposits[0].1.coins.denom);
     assert_eq!(AMOUNT.to_string(), query.deposits[0].1.coins.amount.to_string());
     assert_eq!(1, query.deposits[0].1.count);
-    assert_eq!(res.deposits[0].1.count,1);
-    assert_eq!(res.deposits[0].1.owner, "sender_address");
-    assert_eq!(res.deposits.len(), 1);
+    // assert_eq!(res.deposits[0].1.count,1);
+    // assert_eq!(res.deposits[0].1.owner, "sender_address");
+    
 }

@@ -6,7 +6,7 @@ use cw20_base;
 
 use crate::error::ContractError;
 use crate::functions;
-use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg, DepositResponse};
+use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg, DepositResponse, Cw20DepositResponse};
 use crate::state::{CONFIG, Config, DEPOSITS, Deposits, Cw20Deposits, CW20_DEPOSITS};
 
 
@@ -60,6 +60,7 @@ pub fn query(
     match msg {
         QueryMsg::Config {  }=> to_binary(&functions::get_config(deps)?),
         QueryMsg::Deposits { address } => to_binary(&functions::query_deposit(deps, address)?),
-        QueryMsg::Cw20Deposits { address } => unimplemented!(),
+        QueryMsg::Cw20Deposits { address } => to_binary(&functions::query_cw20_deposits(deps, address)?),
     }
 }
+

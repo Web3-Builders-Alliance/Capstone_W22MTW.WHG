@@ -23,10 +23,13 @@ mod test{
    }
 
    #[test]
-   fn zero_query_deposit(){
+   fn zero_query_deposit(){ 
     let mut deps = mock_dependencies();
     test_functions::setup_contract(deps.as_mut());
     test_functions::deposit_coin(deps.as_mut());
+    let res = functions::query_deposit(deps.as_ref(), SENDER.to_string()).unwrap();
+
+    assert_eq!(res.deposits.len(), 1);
    }
 
    #[test]
@@ -34,5 +37,9 @@ mod test{
     let mut deps = mock_dependencies();
     test_functions::setup_contract(deps.as_mut());
     test_functions::deposit_coin(deps.as_mut());
+
+    let res = functions::query_deposit(deps.as_ref(), SENDER.to_string()).unwrap();
+    assert_eq!(res.deposits[0].1.count, 1);
+    assert_eq!(res.deposits[0].1.owner, "sender_address");
    }
 }
