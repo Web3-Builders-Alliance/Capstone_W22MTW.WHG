@@ -1,9 +1,18 @@
 #[cfg(test)]
 mod tests {
-    use crate::contract::{instantiate};
-    use crate::functions;
-    use crate::msg::{InstantiateMsg,};
-    use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
-    use cosmwasm_std::{coin, from_binary, DepsMut, Deps};
+    
+    
+    use crate::{ test_functions};
+   
+    use cosmwasm_std::testing::{mock_dependencies};
 
+
+    
+    #[test]
+    fn proper_initalization(){
+        let mut deps = mock_dependencies();
+        test_functions::set_contract(deps.as_mut());
+       
+    }
+    
 }

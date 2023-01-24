@@ -26,9 +26,10 @@ pub fn instantiate(
 
     //check the validator
     let validator= deps.querier.query_validator(msg.validator.clone())?;
-    if validator.is_none(){
-        return Err(ContractError::NotInValidatorSet { validator: msg.validator });
-    }
+    
+    // if validator.is_none(){
+    //     return Err(ContractError::NotInValidatorSet { validator: msg.validator });
+    // }
 
     let token = TokenInfo {
         name_token: msg.name_token,
@@ -40,10 +41,10 @@ pub fn instantiate(
 
     let denom = deps.querier.query_bonded_denom()?;
     let invest = InvestmentInfo{
-        owner: info.sender,
+        owner: info.sender.clone(),
         unbonding_period: msg.unbonding_period,
-        bond_denom: denom,
-        validator:msg.validator,
+        bond_denom: denom.clone(),
+        validator:msg.validator.clone(),
         emergancy_fee: msg.emergancy_fee,
     };
 
@@ -51,6 +52,9 @@ pub fn instantiate(
     
     Ok(Response::new()
         .add_attribute("method", "instantiate")
+        .add_attribute("validator", msg.validator)
+        .add_attribute("owner", info.sender)
+        .add_attribute("bonded_token", denom)
     )
 }
 
@@ -83,7 +87,7 @@ pub fn query(
         QueryMsg::Balance { address } => to_binary(&functions::balance(deps, address)?),
         QueryMsg::Claims { address } => to_binary(&CLAIMS.query_claims(deps, &deps.api.addr_validate(&address)?)?),
         QueryMsg::Investment {  } => to_binary(&functions::query_investment(deps, env)?),
-        QueryMsg::TokenInfo {  } => to_binary(&functions::query_token_info(deps, env)?),
+        QueryMsg::TokenInfo {  } => to_binary(&functions::query_token_info(deps)?),
     } 
     
 }

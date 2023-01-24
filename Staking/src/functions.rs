@@ -196,7 +196,6 @@ pub fn query_investment(
 
 pub fn query_token_info(
     deps: Deps, 
-    _env: Env,
 ) -> StdResult<TokenInfoResponse>{
     let info = TOKEN_INFO.load(deps.storage)?;
     
