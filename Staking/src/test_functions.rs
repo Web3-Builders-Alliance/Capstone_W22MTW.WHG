@@ -17,9 +17,12 @@ pub fn set_contract(deps: DepsMut){
             emergancy_fee: Decimal::percent(20),
         };
         
-        
-
-    }
-
+        let info = mock_info(CREATOR, &[]);
+        let res = instantiate(deps.as_mut(), mock_env(), info, msg.clone()).unwrap();
+        assert_eq!(0, res.messages.len());
+        assert_eq!(res.attributes[0].value,"instantiate");
+        assert_eq!(res.attributes[1].value, "val1");
+        assert_eq!(res.attributes[2].value, CREATOR);
+}
 
 
