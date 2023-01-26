@@ -5,7 +5,7 @@ use cosmwasm_std::{
     to_binary, Addr, CosmosMsg, CustomQuery, Querier, QuerierWrapper, StdResult, WasmMsg, WasmQuery,
 };
 
-use cw_boilerplate::msg::{CustomResponse, ExecuteMsg, QueryMsg};                            //changed crate to cw_boilerplate
+use cw_staking::msg::{CustomResponse, ExecuteMsg, QueryMsg};                            //changed crate to cw_boilerplate
 
 /// CwTemplateContract is a wrapper around Addr that provides a lot of helpers
 /// for working with this. Rename it to your contract name.

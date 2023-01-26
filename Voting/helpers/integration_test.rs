@@ -3,7 +3,7 @@ mod helpers;
 #[cfg(test)]
 mod tests {
     use crate::helpers::CwTemplateContract;
-    use cw_boilerplate::msg::InstantiateMsg;                                             //changed crate to cw_boilerplate
+    use voting::msg::InstantiateMsg;                                             //changed crate to cw_boilerplate
     use cosmwasm_std::{Addr, Coin, Empty, Uint128};
     use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
 

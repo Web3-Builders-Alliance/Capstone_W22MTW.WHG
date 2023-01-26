@@ -5,7 +5,7 @@ use cw2::set_contract_version;
 
 use crate::error::ContractError;
 
-use crate::functions::{self, token_info};
+use crate::functions::{self, token_info, invest_info};
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
 use crate::state::{TokenInfo, InvestmentInfo, INVESTMENT, CLAIMS};
 
@@ -47,6 +47,7 @@ pub fn instantiate(
         validator:msg.validator.clone(),
         emergancy_fee: msg.emergancy_fee,
     };
+    invest_info(deps.storage).save(&invest)?;
 
     INVESTMENT.save(deps.storage, &invest)?;
     

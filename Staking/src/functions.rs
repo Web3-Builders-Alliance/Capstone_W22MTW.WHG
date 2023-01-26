@@ -1,12 +1,21 @@
 use cosmwasm_std::{Storage, Addr, Uint128, QuerierWrapper, Response, StakingMsg, DepsMut, Env, MessageInfo, DistributionMsg, coin, Deps, StdResult};
-use cosmwasm_storage::{singleton, Singleton, singleton_read, ReadonlySingleton};
+use cosmwasm_storage::{singleton, Singleton, singleton_read, ReadonlySingleton, Bucket, bucket};
 
 
-use crate::{state::{TokenInfo, INVESTMENT, CLAIMS, TOKEN_INFO}, ContractError, msg::{InvestmentResponse, TokenInfoResponse}};
+use crate::{state::{TokenInfo, INVESTMENT, CLAIMS, TOKEN_INFO, InvestmentInfo}, ContractError, msg::{InvestmentResponse, TokenInfoResponse}};
 
 
-
+pub const KEY_INVESTMENT: &[u8] = b"invest";
 pub const KEY_TOKEN_INFO: &[u8] = b"token";
+pub const PREFIX_BALANCE: &[u8] = b"balance";
+
+pub fn invest_info(storage: &mut dyn Storage) -> Singleton<InvestmentInfo>{
+    singleton(storage, KEY_INVESTMENT)
+}
+
+pub fn invest_info_read(storage: &dyn Storage) -> ReadonlySingleton<InvestmentInfo>{
+    singleton_read(storage, KEY_INVESTMENT)
+}
 
 pub fn token_info(storage: &mut dyn Storage) -> Singleton<TokenInfo> {
     singleton(storage, KEY_TOKEN_INFO)
@@ -14,7 +23,9 @@ pub fn token_info(storage: &mut dyn Storage) -> Singleton<TokenInfo> {
 pub fn token_info_read(storage: &mut dyn Storage) -> ReadonlySingleton<TokenInfo>{
     singleton_read(storage, KEY_TOKEN_INFO)
 }
-
+pub fn balances(storage: &mut dyn Storage) -> Bucket<Uint128>{
+    bucket(storage, PREFIX_BALANCE)
+}
 pub fn get_bonded(
     querier:&QuerierWrapper,
     contract:&Addr,
@@ -43,8 +54,10 @@ pub fn bond(
     env: Env,
     info: MessageInfo,
 ) -> Result<Response,ContractError>{
+    let sender = deps.api.addr_canonicalize(info.sender.as_str())?;
     //check the token before bond
-    let invest = INVESTMENT.load(deps.storage)?;
+   
+    let invest = invest_info_read(deps.storage).load()?;
     let payment = info  
         .funds
         .iter()
@@ -54,6 +67,10 @@ pub fn bond(
         })?;
 
     let _bonded = get_bonded(&deps.querier, &env.contract.address)?;
+    
+    balances(deps.storage).update(&sender, |balance| -> StdResult<_>{
+        Ok(balance.unwrap_or_default())
+    })?;
 
     Ok(Response::new()
         .add_message(StakingMsg::Delegate { 

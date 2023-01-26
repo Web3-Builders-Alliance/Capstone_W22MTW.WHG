@@ -1,9 +1,12 @@
-use cosmwasm_std::{DepsMut, testing::{mock_dependencies, mock_info, mock_env}, Decimal, Deps};
+use std::{clone, env::set_var};
 
-use crate::{msg::InstantiateMsg, contract::instantiate, functions, state::TokenInfo};
+use cosmwasm_std::{DepsMut, testing::{mock_dependencies, mock_info, mock_env}, Decimal, Deps, coin, Api, Addr, QuerierWrapper};
+
+use crate::{msg::{InstantiateMsg, ExecuteMsg}, contract::{instantiate, execute, self}, functions::{self, query_investment, get_bonded}, state::{TokenInfo, InvestmentInfo}};
 
 pub const VAL1:&str = "val1";
 pub const CREATOR:&str = "creator_address";
+
 
 pub fn set_contract(deps: DepsMut){
         let mut deps = mock_dependencies();
@@ -24,5 +27,11 @@ pub fn set_contract(deps: DepsMut){
         assert_eq!(res.attributes[1].value, "val1");
         assert_eq!(res.attributes[2].value, CREATOR);
 }
+
+pub fn bond(deps: DepsMut){
+   
+    
+}
+
 
 
