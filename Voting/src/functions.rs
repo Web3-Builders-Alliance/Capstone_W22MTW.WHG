@@ -71,8 +71,8 @@ pub fn vote(
                 return Err(ContractError::UnauthorizedError {  });
             }
             let position = position.unwrap();
-            poll.options[position].1 += 1;
-            // poll.options[position].1.checked_add(1).unwrap();
+            // poll.options[position].1 += 1;
+            poll.options[position].1.checked_add(1).unwrap();
 
             POLL.save(deps.storage, &poll_id, &poll)?;
 
@@ -91,7 +91,7 @@ pub fn vote(
 
 pub fn query_all_polls(
     deps: Deps,
-    env: Env,
+    _env: Env,
 ) -> StdResult<Binary>{
     let polls = POLL
         .range(deps.storage, None, None, Order::Ascending)
@@ -103,7 +103,7 @@ pub fn query_all_polls(
 
 pub fn query_poll(
     deps: Deps,
-    env: Env,
+    _env: Env,
     poll_id: String
 ) -> StdResult<Binary>{
     let poll = POLL. may_load(deps.storage, &poll_id)?;
@@ -112,7 +112,7 @@ pub fn query_poll(
 
 pub fn query_vote(
     deps: Deps,
-    env: Env,
+    _env: Env,
     poll_id: String,
     address: String,
 ) -> StdResult<Binary>{

@@ -132,9 +132,9 @@ pub fn bond(
 
     totals.save(&supply)?;
     
-    // balances(deps.storage).update(&sender, |balance| -> StdResult<_>{
-    //     Ok(balance.unwrap_or_default() )
-    // })?;
+    balances(deps.storage).update(&sender, |balance| -> StdResult<_>{
+        Ok(balance.unwrap_or_default() )
+    })?;
 
     Ok(Response::new()
         .add_message(StakingMsg::Delegate { 
@@ -150,7 +150,7 @@ pub fn bond(
 pub fn redelegate(
     deps: DepsMut,
     env: Env,
-    info: MessageInfo
+    _info: MessageInfo
 ) -> Result<Response,ContractError>{
     let contract_addr = env.contract.address;
     let invest = invest_info_read(deps.storage).load()?;
@@ -176,7 +176,7 @@ pub fn bond_all_tokens(
     }
 
     let invest = invest_info_read(deps.storage).load()?;
-    let mut balance = deps
+    let  balance = deps
         .querier
         .query_balance(&env.contract.address, &invest.bond_denom)?;
 
@@ -234,8 +234,6 @@ pub fn unbond(
         return Err(ContractError::NothingToClaim {  });
     }
 
-    // let unbond_amount= reward.checked_add(bonded);
-
     Ok(Response::new()
         . add_message(StakingMsg::Undelegate { validator: invest.validator, amount: coin(reward.u128(), &invest.bond_denom)})
         .add_attribute("method", "unbond")
@@ -262,14 +260,9 @@ pub fn query_token_info(
         decimals
     } = token_info_read(deps.storage).load()?;
     
-    // Ok(TokenInfoResponse { name_token, symbol_token, decimals})
+    Ok(TokenInfoResponse { name_token, symbol_token, decimals})
 
-    let res = TokenInfoResponse{
-        name_token,
-        symbol_token,
-        decimals
-    };
-    Ok(res)
+    
 }
 
 pub fn query_investment(
@@ -288,11 +281,3 @@ pub fn query_investment(
         unbonding_period:cw_utils::Duration::Height(100),
      })
 }
-    // let res = InvestmentResponse{
-    //     staked_tokens: coin(bonded_token.bonded.u128(), &invest.bond_denom),
-    //     owner: invest.owner.to_string(),
-    //     validator: invest.validator,
-    //     emergancy_fee: invest.emergancy_fee
-    // };
-    // Ok(res)
-    // }

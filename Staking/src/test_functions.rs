@@ -1,9 +1,9 @@
-use std::{clone, env::set_var};
 
-use cosmwasm_std::{DepsMut, testing::{mock_dependencies, mock_info, mock_env, MockQuerier, MOCK_CONTRACT_ADDR}, Decimal, Deps, coin, Api, Addr, QuerierWrapper, Validator, Uint128, StdResult, FullDelegation, Coin, StakingMsg, CosmosMsg, coins};
-use cw_utils::Duration;
-
-use crate::{msg::{InstantiateMsg, ExecuteMsg, BalanceResponse, ClaimResponse}, contract::{instantiate, execute, self}, functions::{self, query_investment, get_bonded, query_token_info, balances_read, claims_read, bond}, state::{TokenInfo, InvestmentInfo}};
+use cosmwasm_std::testing::{mock_dependencies, mock_info, mock_env, MockQuerier, MOCK_CONTRACT_ADDR};
+use cosmwasm_std::{Validator, Decimal, Deps, StdResult, Uint128, coin, CosmosMsg, StakingMsg, coins};
+use crate::msg::{InstantiateMsg, ExecuteMsg, BalanceResponse, ClaimResponse}; 
+use crate::contract::{instantiate, execute};
+use crate::functions::{query_investment, query_token_info, balances_read, claims_read};
 
 pub const VAL1:&str = "val1";
 pub const CREATOR:&str = "creator_address";
@@ -12,20 +12,6 @@ fn sample_val(addr: &str) -> Validator {
     Validator { address: addr.to_owned(), commission: Decimal::percent(5), max_commission: Decimal::percent(10) , max_change_rate: Decimal::percent(1) }
 }
 
-fn sample_delegation(
-    validator_addr:&str,
-    amount: Coin
-) -> FullDelegation{
-    let can_redelegate = amount.clone();
-    FullDelegation{
-        validator: validator_addr.to_owned(),
-        delegator: Addr::unchecked(MOCK_CONTRACT_ADDR),
-        amount,
-        can_redelegate,
-        accumulated_rewards: Vec::new(),
-        
-    }
-}
 
 pub fn set_validator(querier: &mut MockQuerier) {
     querier.update_staking(
@@ -34,7 +20,7 @@ pub fn set_validator(querier: &mut MockQuerier) {
     );
 }
 
-fn set_delegation(querier: &mut MockQuerier, amount: u128, denom: &str) {
+fn set_delegation(querier: &mut MockQuerier, _amount: u128, _denom: &str) {
     querier.update_staking(
         "utest", &[sample_val(VAL1)], &[]
     );
@@ -64,7 +50,7 @@ pub fn query_claim(
 
 fn get_balance(
     deps: Deps,
-    addr: &str
+    addr: &str,
 ) -> Uint128 {
     query_balance(deps, addr).unwrap().balance
 }

@@ -1,5 +1,3 @@
-use std::default;
-
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult,to_binary, Uint128};
@@ -56,14 +54,13 @@ pub fn instantiate(
     
     total_supply(deps.storage).save(&supply)?;
     
-    Ok(Response::default())
     
-    // Ok(Response::new()
-    //     .add_attribute("method", "instantiate")
-    //     .add_attribute("validator", msg.validator)
-    //     .add_attribute("owner", info.sender)
-    //     .add_attribute("bonded_token", denom)
-    // )
+    Ok(Response::new()
+        .add_attribute("method", "instantiate")
+        .add_attribute("validator", msg.validator)
+        .add_attribute("owner", info.sender)
+        .add_attribute("bonded_token", denom)
+    )
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -89,7 +86,7 @@ pub fn execute(
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(
     deps: Deps, 
-    env: Env,
+    _env: Env,
     msg: QueryMsg
 ) -> StdResult<Binary> {
     match msg{
