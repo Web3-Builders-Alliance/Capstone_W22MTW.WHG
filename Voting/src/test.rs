@@ -3,29 +3,26 @@ mod tests {
     use std::vec;
 
     use crate::contract::{instantiate, execute, query};
-    use crate::functions::{self, vote};
     use crate::msg::{InstantiateMsg, ExecuteMsg, QueryMsg, AllPollResponse, PollResponse, VoteResponse};
-    use crate::state::Poll;
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
-    use cosmwasm_std::{attr,from_binary, DepsMut};
+    use cosmwasm_std::{attr,from_binary};
 
     pub const ADDR1: &str = "addr1";
-    pub const ADDR2: &str = "addr2";
-
+    
     #[test]
     fn proper_instantiate(){
         let mut deps = mock_dependencies();
-        let env = mock_env();
+        let _env = mock_env();
         let info = mock_info(ADDR1, &[]);
 
         let msg = InstantiateMsg {admin: None};
 
         let res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
 
-        assert_eq!(res.attributes, vec![attr("method", "instantiate"), attr("admin",ADDR1)])
-        // assert_eq!(0, res.messages.len());
-        // assert_eq!(ADDR1, "addr1");
-        // assert_eq!("addr2", ADDR2);
+        assert_eq!(res.attributes, vec![attr("method", "instantiate"), attr("admin",ADDR1)]);
+        assert_eq!(0, res.messages.len());
+        assert_eq!(ADDR1, "addr1");
+       
     }
 
     #[test]
@@ -37,7 +34,7 @@ mod tests {
         //instantiate the contract
 
         let msg = InstantiateMsg{ admin :None};
-        let res = instantiate(deps.as_mut(), mock_env(), info.clone(), msg).unwrap();
+        instantiate(deps.as_mut(), mock_env(), info.clone(), msg).unwrap();
 
         //create poll
         let msg = ExecuteMsg::CreatePoll { poll_id: "07".to_string(), topic: "Do you want ...?".to_string(), options: vec![
@@ -60,7 +57,7 @@ mod tests {
         //instantiage 
         let msg = InstantiateMsg {admin: None};
             
-        let res = instantiate(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+        instantiate(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
 
         //create poll
     
@@ -82,7 +79,7 @@ mod tests {
         let env = mock_env();
         let info = mock_info(ADDR1, &[]);
         let msg = InstantiateMsg { admin: None};
-        let res = instantiate(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+        instantiate(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
         
         //create poll
         let msg = ExecuteMsg::CreatePoll { poll_id: "07".to_string(), topic: "Do you want ...?".to_string(), options: vec![
@@ -91,7 +88,7 @@ mod tests {
             "I'm not interested".to_string()
         ]};
 
-        let res = execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+        execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
 
         //voting 
         let msg = ExecuteMsg::Vote { poll_id: "07".to_string(), vote:"yes".to_string(), topic: "Do you want ...?".to_string(), options: vec![
@@ -111,7 +108,7 @@ mod tests {
         let env = mock_env();
         let info = mock_info(ADDR1, &[]);
         let msg = InstantiateMsg { admin: None};
-        let res = instantiate(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+        instantiate(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
 
         //create poll
         let msg = ExecuteMsg::CreatePoll { poll_id: "07".to_string(), topic: "Do you want ...?".to_string(), options: vec![
@@ -120,7 +117,7 @@ mod tests {
             "I'm not interested".to_string(),
         ] 
         };
-        let res = execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+        execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
 
         //create 2. poll
         let msg = ExecuteMsg::CreatePoll { poll_id: "08".to_string(), topic: "Do you want ...?".to_string(), options: vec![
@@ -129,7 +126,7 @@ mod tests {
             "I'm not interested".to_string()
         ] 
         };
-        let res = execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+        execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
 
         //query
         let msg = QueryMsg::AllPolls {  };
@@ -144,11 +141,11 @@ mod tests {
         let env = mock_env();
         let info =  mock_info(ADDR1, &[]);
         let msg = InstantiateMsg{admin:None };
-        let res = instantiate(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+        instantiate(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
 
         //create poll
         let msg = ExecuteMsg::CreatePoll { poll_id: "08".to_string(), topic: "".to_string(), options: vec![] };
-        let res = execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+        execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
     
         //Query for poll_id
         let msg = QueryMsg::Poll { poll_id: "08".to_string() };
@@ -172,7 +169,7 @@ mod tests {
         let env = mock_env();
         let info = mock_info(ADDR1, &[]);
         let msg = InstantiateMsg{admin: None};
-        let res = instantiate(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+        instantiate(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
 
         //create poll
         let msg = ExecuteMsg::CreatePoll { poll_id: "07".to_string(), topic: "Do you want ...?".to_string(), options: vec![
@@ -180,7 +177,7 @@ mod tests {
             "no".to_string(),
             "I'm not interested".to_string()
         ]};
-        let res = execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+        execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
 
         //Vote
         let msg = ExecuteMsg::Vote { poll_id: "07".to_string(), vote: "yes".to_string(), topic: "Do you want ...?".to_string(), options: vec![
@@ -188,7 +185,7 @@ mod tests {
             "no".to_string(),
             "I'm not interested".to_string()
         ]};
-        let res = execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
+        execute(deps.as_mut(), env.clone(), info.clone(), msg).unwrap();
         //query for the vote
         let msg = QueryMsg::Vote { poll_id: "07".to_string(), address: ADDR1.to_string() };
 
