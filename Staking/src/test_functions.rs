@@ -1,6 +1,5 @@
-
 use cosmwasm_std::testing::{mock_dependencies, mock_info, mock_env, MockQuerier, MOCK_CONTRACT_ADDR};
-use cosmwasm_std::{Validator, Decimal, Deps, StdResult, Uint128, coin, CosmosMsg, StakingMsg, coins};
+use cosmwasm_std::{Decimal, Deps, StdResult, Uint128, coin, CosmosMsg, coins, Validator, StakingMsg};
 use crate::msg::{InstantiateMsg, ExecuteMsg, BalanceResponse, ClaimResponse}; 
 use crate::contract::{instantiate, execute};
 use crate::functions::{query_investment, query_token_info, balances_read, claims_read};

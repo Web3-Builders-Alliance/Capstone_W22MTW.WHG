@@ -1,1 +1,1 @@
-c70b2af0a67c3a82bafd582507eeec033f6d1105b2c8aef4f50b5c5c0b5d51b9  ./target/wasm32-unknown-unknown/release/cw_starter.wasm
+249205600bea6dd529ea118f706bf0c510f0fab68bf24d281de4a8b7f75dd286  ./target/wasm32-unknown-unknown/release/voting.wasm

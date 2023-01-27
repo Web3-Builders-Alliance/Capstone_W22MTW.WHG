@@ -1,6 +1,7 @@
 use cosmwasm_std::{DepsMut, MessageInfo, Response, BankMsg, coin, Uint128, Deps, StdResult, Order, WasmMsg, to_binary};
-
-use crate::{state::{CONFIG, DEPOSITS, Deposits, CW20_DEPOSITS, Cw20Deposits, Config}, ContractError, msg::{DepositResponse, Cw20DepositResponse}};
+use crate::ContractError;
+use crate::state::{CONFIG, DEPOSITS, Deposits, CW20_DEPOSITS, Cw20Deposits, Config}; 
+use crate::msg::{DepositResponse, Cw20DepositResponse};
 
 
 pub fn execute_deposit(

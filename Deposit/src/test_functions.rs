@@ -1,4 +1,6 @@
-use cosmwasm_std::{DepsMut, testing::{mock_info, mock_env}, coin, Deps, from_binary, Uint128};
+
+use cosmwasm_std::testing::{mock_info, mock_env};
+use cosmwasm_std:: {coin, Deps, from_binary, Uint128, DepsMut};
 use crate::msg::{InstantiateMsg, ExecuteMsg, QueryMsg, DepositResponse};
 use crate::contract::{instantiate, execute, query};
 
