@@ -1,36 +1,189 @@
 use std::{clone, env::set_var};
 
-use cosmwasm_std::{DepsMut, testing::{mock_dependencies, mock_info, mock_env}, Decimal, Deps, coin, Api, Addr, QuerierWrapper};
+use cosmwasm_std::{DepsMut, testing::{mock_dependencies, mock_info, mock_env, MockQuerier, MOCK_CONTRACT_ADDR}, Decimal, Deps, coin, Api, Addr, QuerierWrapper, Validator, Uint128, StdResult, FullDelegation, Coin, StakingMsg, CosmosMsg, coins};
+use cw_utils::Duration;
 
-use crate::{msg::{InstantiateMsg, ExecuteMsg}, contract::{instantiate, execute, self}, functions::{self, query_investment, get_bonded}, state::{TokenInfo, InvestmentInfo}};
+use crate::{msg::{InstantiateMsg, ExecuteMsg, BalanceResponse, ClaimResponse}, contract::{instantiate, execute, self}, functions::{self, query_investment, get_bonded, query_token_info, balances_read, claims_read, bond}, state::{TokenInfo, InvestmentInfo}};
 
 pub const VAL1:&str = "val1";
 pub const CREATOR:&str = "creator_address";
 
+fn sample_val(addr: &str) -> Validator {
+    Validator { address: addr.to_owned(), commission: Decimal::percent(5), max_commission: Decimal::percent(10) , max_change_rate: Decimal::percent(1) }
+}
 
-pub fn set_contract(deps: DepsMut){
-        let mut deps = mock_dependencies();
+fn sample_delegation(
+    validator_addr:&str,
+    amount: Coin
+) -> FullDelegation{
+    let can_redelegate = amount.clone();
+    FullDelegation{
+        validator: validator_addr.to_owned(),
+        delegator: Addr::unchecked(MOCK_CONTRACT_ADDR),
+        amount,
+        can_redelegate,
+        accumulated_rewards: Vec::new(),
         
+    }
+}
+
+pub fn set_validator(querier: &mut MockQuerier) {
+    querier.update_staking(
+        "utest",
+        &[sample_val(VAL1)], &[]
+    );
+}
+
+fn set_delegation(querier: &mut MockQuerier, amount: u128, denom: &str) {
+    querier.update_staking(
+        "utest", &[sample_val(VAL1)], &[]
+    );
+}
+pub fn query_balance(
+    deps: Deps, 
+    address: &str
+) -> StdResult<BalanceResponse> {
+    let address = deps.api. addr_canonicalize(address)?;
+    let balance = balances_read(deps.storage)
+        .may_load(address.as_slice())?
+        .unwrap_or_default();
+    Ok(BalanceResponse { balance })
+}
+
+pub fn query_claim(
+    deps: Deps, 
+    address: &str,
+) -> StdResult<ClaimResponse>{
+    let address = deps.api.addr_canonicalize(address)?;
+    let claims = claims_read(deps.storage)
+        .may_load(address.as_slice())?
+        .unwrap_or_default();
+
+    Ok(ClaimResponse { claims })
+}
+
+fn get_balance(
+    deps: Deps,
+    addr: &str
+) -> Uint128 {
+    query_balance(deps, addr).unwrap().balance
+}
+
+fn get_claim(
+    deps: Deps,
+    addr: &str,
+) -> Uint128{
+    query_claim(deps, addr).unwrap().claims
+}
+
+fn first_instantiate() -> InstantiateMsg{
+    InstantiateMsg { 
+        name_token: "utest".to_string(), 
+        symbol_token: "UT".to_string(), 
+        decimals: 0, 
+        validator: String::from("val1"), 
+        unbonding_period: cw_utils::Duration::Height(100), 
+        emergancy_fee: Decimal::percent(20) 
+    }
+}
+
+
+pub fn set_contract(){
+        
+        let mut deps = mock_dependencies();
+
+        deps.querier.update_staking("utest", &[sample_val("val1")], &[]);
+        let bonder = String::from("bonder");
         let msg = InstantiateMsg{
             name_token:"utest".to_string(),
             symbol_token:"UT".to_string(),
             decimals:0,
-            validator:String::from("val1"),
-            unbonding_period: cw_utils::Duration::Time(0),
+            validator: "val1".to_string(),
+            unbonding_period: cw_utils::Duration::Height(100),
             emergancy_fee: Decimal::percent(20),
         };
         
-        let info = mock_info(CREATOR, &[]);
+        let info = mock_info(&bonder, &[]);
         let res = instantiate(deps.as_mut(), mock_env(), info, msg.clone()).unwrap();
         assert_eq!(0, res.messages.len());
-        assert_eq!(res.attributes[0].value,"instantiate");
-        assert_eq!(res.attributes[1].value, "val1");
-        assert_eq!(res.attributes[2].value, CREATOR);
+
+        let token = query_token_info(deps.as_ref()).unwrap();
+        assert_eq!(&token.name_token, "utest");
+        assert_eq!(&token.symbol_token, "UT");
+        assert_eq!(token.decimals, 0);
+        
+
+        assert_eq!(get_balance(deps.as_ref(), &bonder), Uint128::new(0));
+        assert_eq!(get_claim(deps.as_ref(), &bonder), Uint128::new(0));
+
+        let invest = query_investment(deps.as_ref()).unwrap();
+        assert_eq!(&invest.owner, &bonder);
+        assert_eq!(&invest.validator, &msg.validator);
+        assert_eq!(invest.emergancy_fee, msg.emergancy_fee);
+        assert_eq!(invest.unbonding_period, msg.unbonding_period);
+
+        assert_eq!(invest.token_supply, Uint128::new(0));
+        assert_eq!(invest.staked_tokens, coin(0, "utest"));
 }
 
-pub fn bond(deps: DepsMut){
-   
+pub fn bonding_tokens(){
+    let mut deps = mock_dependencies();
+    set_validator(&mut deps.querier);
+    let new_bonder = String::from("new_bonder");
+    let msg = first_instantiate();
+    let info = mock_info(&new_bonder, &[]);
+    let res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
+    assert_eq!(0, res.messages.len());
     
+    let msg = ExecuteMsg::Bond {  };
+    let info = mock_info(&new_bonder, &[coin(10, "utest")]); //bonding 10 utest token
+    let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
+    assert_eq!(1, res.messages.len());
+
+    let delegate = &res.messages[0].msg;
+    match delegate{ 
+        CosmosMsg::Staking(StakingMsg::Delegate{validator, amount}) => {
+            assert_eq!(validator.as_str(), VAL1);
+            assert_eq!(amount, &coin(10, "utest"));
+        }
+        _=> panic!("Unexpected message: {:?}", delegate)
+    }   
+
+    let invest = query_investment(deps.as_ref()).unwrap();
+    assert_eq!(invest.token_supply, Uint128::new(10));
+    assert_eq!(invest.staked_tokens, coin(10, "utest"));
+}
+
+pub fn redelegate(){
+    let mut deps = mock_dependencies();
+    set_validator(&mut deps.querier);
+
+    let bonder = String::from("bonder");
+    let msg = first_instantiate();
+    let info = mock_info(&bonder, &[]);
+    let res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
+    assert_eq!(0, res.messages.len());
+
+    let new_bonder = String::from("new_bonder");
+    let msg = ExecuteMsg::Bond {  };
+    let info = mock_info(&new_bonder, &[coin(10, "utest")]);
+    let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
+    assert_eq!(1, res.messages.len());
+
+    set_delegation(&mut deps.querier, 10, "utest");
+
+    let redelagate_msg = ExecuteMsg::BondAllTokens {  };
+    let info = mock_info(MOCK_CONTRACT_ADDR, &[]);
+    deps.querier
+        .update_balance(MOCK_CONTRACT_ADDR, coins(20, "utest"));
+    let _ = execute(deps.as_mut(), mock_env(), info, redelagate_msg).unwrap();
+    
+    set_delegation(&mut deps.querier, 30, "utest");
+
+    let invest = query_investment(deps.as_ref()).unwrap();
+    assert_eq!(invest.token_supply, Uint128::new(10));
+    assert_eq!(invest.staked_tokens, coin(10, "utest"));
+
 }
 
 
