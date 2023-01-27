@@ -1,13 +1,12 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, Uint128, BankMsg, Order, to_binary, WasmMsg};
+use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, to_binary};
 use cw2::set_contract_version;
-use cw20_base;
 
 use crate::error::ContractError;
 use crate::functions;
-use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg, DepositResponse, Cw20DepositResponse};
-use crate::state::{CONFIG, Config, DEPOSITS, Deposits, Cw20Deposits, CW20_DEPOSITS};
+use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
+use crate::state::{CONFIG, Config};
 
 
 const CONTRACT_NAME: &str = "crates.io:deposit";

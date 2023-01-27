@@ -1,5 +1,6 @@
-use cosmwasm_std::{DepsMut, testing::{mock_info, mock_env}, coin, Deps, from_binary, Uint128, coins};
-use crate::{msg::{InstantiateMsg, ExecuteMsg, QueryMsg, DepositResponse}, contract::{instantiate, execute, query}, functions, state::Config};
+use cosmwasm_std::{DepsMut, testing::{mock_info, mock_env}, coin, Deps, from_binary, Uint128};
+use crate::msg::{InstantiateMsg, ExecuteMsg, QueryMsg, DepositResponse};
+use crate::contract::{instantiate, execute, query};
 
 pub const SENDER: &str = "sender_address";
 const AMOUNT: u128 = 1_000;
@@ -48,7 +49,6 @@ pub fn cw20_deposit(deps: DepsMut){
 pub fn cw20_withdraw(deps: DepsMut){
     let msg = ExecuteMsg::Cw20Withdraws { contract: SENDER.to_string(), amount: Uint128::new(10) };
     let info = mock_info(SENDER, &[]);
-    let owner = SENDER.to_string();
     let res = execute(deps, mock_env(), info, msg).unwrap();
 
     assert_eq!(res.attributes[0].value, "cw20_withdraw".to_string());

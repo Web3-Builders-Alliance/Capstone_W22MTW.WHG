@@ -42,7 +42,7 @@ pub fn execute_deposit(
                 .save(deps.storage, (&sender, d_coins.denom.as_str()), &deposit)
                 .unwrap();
 
-                let msg = BankMsg::Send { 
+                let _msg = BankMsg::Send { 
                     to_address: sender.clone(),
                     amount: vec![coin(amount, denom.clone())],
                  };
