@@ -1,0 +1,2 @@
+6349b70480af8069e4ac7f2d21b3267e02a13de04f79b8e1a48d03821830fa88  ./target/wasm32-unknown-unknown/release/capstone_project.wasm
+c3eb4e4356e57bd10012040147319b38e5ec2b1063bd76e88b9c739f7b898ab2  ./target/wasm32-unknown-unknown/release/deposit.wasm

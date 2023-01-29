@@ -1,0 +1,11 @@
+/home/wildhash/WBA/CapStone/CapStone_Staking/Deposit/target/debug/deps/ed25519_zebra-4ed5899390d60cad.rmeta: /home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/lib.rs /home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/batch.rs /home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/error.rs /home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/signature.rs /home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/signing_key.rs /home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/verification_key.rs /home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/../README.md
+
+/home/wildhash/WBA/CapStone/CapStone_Staking/Deposit/target/debug/deps/ed25519_zebra-4ed5899390d60cad.d: /home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/lib.rs /home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/batch.rs /home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/error.rs /home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/signature.rs /home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/signing_key.rs /home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/verification_key.rs /home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/../README.md
+
+/home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/lib.rs:
+/home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/batch.rs:
+/home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/error.rs:
+/home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/signature.rs:
+/home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/signing_key.rs:
+/home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/verification_key.rs:
+/home/wildhash/.cargo/registry/src/github.com-1ecc6299db9ec823/ed25519-zebra-3.1.0/src/../README.md:
